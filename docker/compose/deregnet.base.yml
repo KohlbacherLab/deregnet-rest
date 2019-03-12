@@ -1,0 +1,41 @@
+version: '3'
+services:
+  deregnet-rest:
+    image: sebwink/deregnet-rest
+    build: 
+      context: ../..
+      dockerfile: ./docker/server/Dockerfile
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+    restart: on-failure
+    networks:
+      - deregnet 
+    depends_on:
+      - redis 
+      - mongodb
+  deregnet-docs:
+    image: sebwink/swagger-docs 
+    build:
+      context: ../..
+      dockerfile: ./docs/Dockerfile 
+    environment:
+      SWAGGER_DOCS_SPEC: /app/specs/swagger.json 
+      SWAGGER_DOCS_NAME: deregnet 
+      SWAGGER_DOCS_AUTH: basic
+    volumes:
+      - '../../server/deregnet_rest/swagger:/app/specs'
+    networks:
+      - deregnet
+  deregnet-kong-setup:
+    image: sebwink/deregnet-kong-setup
+    build:
+      context: ../deregnet-kong-setup
+    depends_on:
+      - kong
+    networks:
+      - deregnet
+
+networks:
+  deregnet:
+    external: True

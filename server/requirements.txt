@@ -1,7 +1,0 @@
-connexion
-python_dateutil
-setuptools
-pymongo
-hashids
-redis
-shyaml
